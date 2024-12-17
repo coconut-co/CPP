@@ -1,0 +1,88 @@
+一：vector(列表容器)
+1.构造函数
+    vector(): 创建一个空vector
+    vector(int nsize): 创建一个vector，元素个数为nsize
+    vector(int nsize， const T& value)： 创建一个vector，元素个数为nsize，且值均为value
+    vector(int nsize, vector<T> vec): 创建二维vector
+        eg：vector<vector<int>> vec(3, vector<int>(4)): 创建3行4列的vector
+
+2.增
+    void push_back(const T& x): 向量尾部增加一个元素x
+    iterator insert(iterator it, const T& x): it迭代器指向元素前增加一个元素x
+
+3.删
+    iterator erase(iterator it): 删除vector中it迭代器指向的元素
+    void pop_back(): 删除vector中最后一个元素(注：push_back有参数传入，pop_back函数无参数)
+    void clear：清空vector中所有元素
+
+4.查
+    at(in pos) or [int pos]：返回pos位置元素的引用
+    front(): 返回首元素的引用
+    back(): 返回尾元素的引用
+    for遍历
+        注：循环的是迭代器的指针，所以要解引用进行取值
+        eg：for(auto it = vec.begin(); it < vec.end(); it++){
+            std::cout << *it << std::endl;
+        }
+
+5.其他重要的函数
+    capacity：当前vector分配的大小
+    size：当前已有数据的大小
+    resize：改变当前使用数据的大小，如果它比当前使用的大，填充默认值
+    reserve：改变当前容器的最大容量
+    empty：判断vector是否为空
+    swap：与另一个vector交换数据
+
+二、unordered_map(哈希表容器)
+1.构造函数
+    unordered_map()：默认构造函数
+    unordered_map(std::initializer_list<T>): 列表初始化
+        eg：std::unordered_map attr = {{"boyfriend", true}, {"cat", false}}
+
+    unordered_map(Iterator first, Iterator last): 用另外 迭代器范围内的值来初始化
+        注：begin() 返回的是 unordered_map 中的第一个元素的迭代器, 但由于 unordered_map 无序, 第一个元素不一定是插入的第一个键值对
+
+    unordered_map(const unordered_map&):拷贝构造
+    unordered_map(const unordered_map&&):移动构造(将一个unordered_map的资源转移到另一个unordered_map上)
+
+
+2.增
+    insert(std::initializer_list<std::pair<T1, T2>>)
+        eg:attr.insert({{"boyfriend", true}, {"cat", false}})
+    insert(std::make_pair(T1, T2))
+        eg:attr.insert(std::make_pair("girlfriend", false))
+    [],不存在的key会直接增加进map
+        eg：attr["a"] = 1
+    注：insert方法插入进去的pair，如果事先存在一样的key则会更新该key
+
+3.删
+    根据iterator删除：map.erase(map.begin())
+    根据key删除:map.erase("apple")
+    删除所有：map.clear()
+    注：
+        begin返回的是unordered_map中第一个元素的迭代器，但由于unordered_map无序，第一个元素不一定是插入的第一个键值对。假设当前umap的内容是{{“apple”，1}，{“car”，0}}
+        如果调用umap.erase(umap.begin()),他会删除{“apple”，1} 或 {“car”，0}
+
+4.查
+    map.at(key) or map[key]
+        注：当用at访问不存在的key时，会报out of range error，[]不会     for key in map！！！坚决错误
+    iterator find (const key_type& k)
+        eg:if (map.find("apple") != map.end())
+            std::cout << map.at("apple") << "\n";
+        eg:auto iter2 = map.find("apple")
+            if (iter2 != map.end())
+            key = iter2->first
+            value = iter2->second
+
+5.其他重要的函数
+    size  当前已有数据的大小
+    empty 判断unordered_map是否为空
+    swap  与另一个unordered_map交换数据
+    count 计数unordered map里面key的数量
+
+三、map(有序，在创建时可以自定义排序方法以及更加灵活的查询方法)
+    自定义排序方法:默认情况下，map调用std：：less<T>规则，根据容器内各键值对的键的大小，对所有键值做升序排列，我们可以在map的第3个模板参数处传入我们自定义的排序函数functor
+
+    查询方法：由于map是有序的，所以可以灵活查出大于或小于某个阈值的起始迭代器位置，通过lower_bound和upper_bound实现，典型的应用是STL内置内存分配器和pytorch内存分配器等一大串allocator，经常用到这两个bound来查询大于某某size的block然后分配出去
+    auto iter = myMap.lower_bound(20)  // 返回的是指向刚好大于等于20的下一个元素的迭代器
+    auto iter = myMap.upper_bound(20)  // 返回的是指向刚好大于    20的下一个元素的迭代器
